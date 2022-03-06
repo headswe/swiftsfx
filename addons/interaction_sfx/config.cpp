@@ -43,4 +43,4 @@ class Extended_HitPart_EventHandlers
 class CfgSounds {
 #include "sounds_deathscreams.hpp"
 #include "sounds_ironsights.hpp"
-}
+};
