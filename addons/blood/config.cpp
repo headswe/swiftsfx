@@ -16,13 +16,13 @@ class cfgPatches
 };
 class Extended_HitPart_EventHandlers
 {
-	class CAManBase
-	{
-		class GVAR(HitPart)
-		{
+    class CAManBase
+    {
+        class GVAR(HitPart)
+        {
             hitPart = QUOTE(_this call FUNC(onHit));
-		};
-	};
+        };
+    };
 };
 class Extended_PostInit_EventHandlers {
     class ADDON {

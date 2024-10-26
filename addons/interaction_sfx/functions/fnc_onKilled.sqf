@@ -4,12 +4,9 @@ if (!_useEffects || {isNull _unit}) exitWith {};
 // check if unit is inside
 
 private _vehicle = objectParent _unit;
-private _randomFall = '';
 private _deathSound = '';
 private _hitHead = _unit getHit "head";
-if (isNull _vehicle) then {
-	_randomFall = selectRandom GVAR(fallsounds);
-};
+
 
 if(_hitHead >= 1) then {
 	_deathSound = selectRandom GVAR(suffcationSounds);
@@ -26,11 +23,14 @@ if (_hitHead >= 1) then {
 } else {
 	[_unit, _deathSound, 90] remoteExec [QFUNC(playSound)];
 };
+if (isNull _vehicle) then {
+	private _randomFall = selectRandom GVAR(fallsounds);
+	[
+		{
+			_this remoteExec [QFUNC(playSound)];
+		},
+		[_unit, _randomFall, 70],
+		0.7
+	] call CBA_fnc_waitAndExecute;
+};
 
-[
-	{
-		_this remoteExec [QFUNC(playSound)];
-	},
-	[_unit, _randomFall, 70],
-	0.7
-] call CBA_fnc_waitAndExecute;
