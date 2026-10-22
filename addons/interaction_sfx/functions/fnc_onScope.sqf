@@ -6,7 +6,7 @@ if (_view != 'GUNNER' && {_prevView != 'GUNNER'}) exitWith {};
 private _playSound = true;
 if (!isNull objectParent _unit) then {
     private _seats = (fullCrew objectParent _unit) select {(_x#0) == _unit};
-    if(count _seats == 0) exitWith {_playSound = false;};
+    if (_seats isEqualTo []) exitWith {_playSound = false;};
     private _personTurret = (_seats # 0) # 4;
     if(!_personTurret) exitWith {_playSound = false;};
 };
