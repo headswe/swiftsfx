@@ -1,5 +1,5 @@
 #include "script_component.hpp"
-#include "XEH_PREP.sqf"
+#include "XEH_PREP.hpp"
 
 GVAR(splatters) = [];
 GVAR(textures) = [
@@ -32,3 +32,4 @@ GVAR(hitsounds) = [
 [QGVAR(ENABLE), "CHECKBOX", ["Enable bloodsplatters", ""], ["SwiftSFX", "Blood"], true] call CBA_fnc_addSetting;
 [QGVAR(MAX), "SLIDER",   ["Max number of bloodsplatters",   ""], ["SwiftSFX", "Blood"], [100, 500, 500, 0]] call CBA_fnc_addSetting;
 [QGVAR(DECAY_TIME), "TIME",   ["Bloodsplatter lifetime",   ""], ["SwiftSFX", "Blood"], [60, 3600, 3600]] call CBA_fnc_addSetting;
+[QGVAR(SHARE), "CHECKBOX", ["Share bloodsplatters with all players", "Off: only the shooter sees their own splatters, and splatters from AI shots are not shown"], ["SwiftSFX", "Blood"], true, 1] call CBA_fnc_addSetting;

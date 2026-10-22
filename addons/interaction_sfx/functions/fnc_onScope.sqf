@@ -1,10 +1,12 @@
 #include "\x\swift\addons\interaction_sfx\script_component.hpp"
 params ['_unit', '_view', '_prevView'];
 if (currentWeapon _unit == '' || {!GVAR(IRONSIGHTS_ENABLE)} ||  {isNull cameraOn} || {is3DEN}) exitWith {};
+// only aiming down sights or leaving them, not first/third person switches
+if (_view != 'GUNNER' && {_prevView != 'GUNNER'}) exitWith {};
 private _playSound = true;
 if (!isNull objectParent _unit) then {
     private _seats = (fullCrew objectParent _unit) select {(_x#0) == _unit};
-    if(count _seats > 1) exitWith {_playSound = false;};
+    if(count _seats == 0) exitWith {_playSound = false;};
     private _personTurret = (_seats # 0) # 4;
     if(!_personTurret) exitWith {_playSound = false;};
 };

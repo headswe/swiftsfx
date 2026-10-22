@@ -1,5 +1,5 @@
 #include "script_component.hpp"
-#include "XEH_PREP.sqf"
+#include "XEH_PREP.hpp"
 
 GVAR(ENABLE) = true;
 GVAR(IRONSIGHTS_ENABLE) = true;
@@ -14,5 +14,6 @@ GVAR(helmet_hit) = ["bullet_impact_helmet_01_wave","bullet_impact_helmet_02_wave
 
 ["cameraView", FUNC(onScope)] call CBA_fnc_addPlayerEventHandler;
 
-[QGVAR(ENABLE), "CHECKBOX", ["Enable death sounds", ""], ["SwiftSFX", "Sounds"], true] call CBA_fnc_addSetting;
+[QGVAR(ENABLE), "CHECKBOX", ["Enable death and hit sounds", ""], ["SwiftSFX", "Sounds"], true] call CBA_fnc_addSetting;
 [QGVAR(IRONSIGHTS_ENABLE), "CHECKBOX", ["Enable ironsight sounds", ""], ["SwiftSFX", "Sounds"], true] call CBA_fnc_addSetting;
+[QGVAR(INSIDE_ENABLE), "CHECKBOX", ["Use indoor death sounds", "Units killed under a building roof use the indoor death sounds"], ["SwiftSFX", "Sounds"], true, 1] call CBA_fnc_addSetting;

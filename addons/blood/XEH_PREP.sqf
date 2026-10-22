@@ -1,2 +1,0 @@
-PREP(onHit);
-PREP(cleanup);

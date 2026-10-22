@@ -1,57 +1,52 @@
 #include "\x\swift\addons\blood\script_component.hpp"
-if (!GVAR(ENABLE)) exitWith {}; 
-{
-    _x params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfacetype", "_isDirect"];
-    if (_isDirect == false) then {
-        continue;
-    };
-    private _directionVector = (_position vectorFromTo (eyePos _shooter));
-    private _endPos = (_position vectorAdd ((_directionVector vectorMultiply -1) vectorMultiply 4)) vectorAdd [
-        0.15 - (random (0.15 * 2)),
-        0.15 - (random (0.15 * 2)),
-        0.15 - (random (0.15 * 2))
-    ];
-    private _intersects = lineIntersectsSurfaces [_position, _endPos, _target, _shooter, true, 1];
-    if(count _intersects <= 0) then {
-        continue;
-    };
-    playSound3D [selectRandom GVAR(hitsounds), _target, false, _position,5,1,20];
-    private _intersect = _intersects # 0;
-    _intersect params ["_intersectPos", "_surfaceNormal", "_intersectobject", "_parentobject"];
-    
-    private _splatter = createSimpleObject ["Usertexture1m_F", [0, 0, 0], true];
-    
-    // if the surface normal points away, flip it. This happens in weird places like the stratis pier
-    if (_surfaceNormal vectorDotProduct (_endPos vectorDiff _position) > 0) then {
-        _surfaceNormal = _surfaceNormal vectorMultiply -1;
-    };
-    
-    // Check if its a valid surface: big enough, reasonably plane
-    private _v1 = vectorNormalized (_surfaceNormal vectorMultiply -1);
-    private _v2 = [];
-    private _v3 = [];
-    // if the surface is not horizontal (>20º), create vup _v2 pointing upward instead of away
-    private _vectorDirandUp = [];
-    private _randomizeAngle = random 1;
-    if (abs (_v1 select 2) < 0.94) then {
-        _v3 = _v1 vectorCrossProduct [0, 0, 1];
-        _v2 = _v3 vectorCrossProduct _v1;
-        _vectorDirandUp = [_v1, _v2];
-    } else {
-        _v2 = vectorNormalized (_v1 vectorCrossProduct (_endPos vectorDiff _position));
-        _v3 = _v2 vectorCrossProduct _v1;
-        _vectorDirandUp = [_v1, _v3]
-    };
-    _vectorDirandUp set [1, (_vectorDirandUp # 1) vectorAdd [random 1,0,0]];
+// shared splatters are filtered by each receiver's own ENABLE setting
+if (!GVAR(SHARE) && {!GVAR(ENABLE)}) exitWith {};
+// one HitPart call can hold several entries for the same bullet, only use the first direct one
+private _index = _this findIf {_x # 10};
+if (_index < 0) exitWith {};
+(_this # _index) params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfacetype", "_isDirect"];
 
-    
-    _splatter setObjectTexture [0, selectRandom GVAR(TEXTURES)];
-    private _pos = _intersectPos vectorAdd (_surfaceNormal vectorMultiply 0.03);
-    _splatter setPosASL _pos;
-    _splatter setVectorDirAndUp _vectorDirandUp;
-    GVAR(splatters) pushBack [_splatter, time];
-    if(count GVAR(splatters) > GVAR(MAX)) then {
-       (GVAR(splatters) deleteAt 0) params ['_splat'];
-       deleteVehicle _splat;
-    }
-} forEach _this;
+playSound3D [selectRandom GVAR(hitsounds), _target, false, _position, 5, 1, 20];
+
+private _directionVector = vectorNormalized _velocity;
+if (_directionVector isEqualTo [0, 0, 0]) exitWith {};
+private _endPos = (_position vectorAdd (_directionVector vectorMultiply 4)) vectorAdd [
+    0.15 - (random (0.15 * 2)),
+    0.15 - (random (0.15 * 2)),
+    0.15 - (random (0.15 * 2))
+];
+private _intersects = lineIntersectsSurfaces [_position, _endPos, _target, _shooter, true, 1];
+if (_intersects isEqualTo []) exitWith {};
+(_intersects # 0) params ["_intersectPos", "_surfaceNormal", "_intersectobject", "_parentobject"];
+
+// if the surface normal points away, flip it. This happens in weird places like the stratis pier
+if (_surfaceNormal vectorDotProduct (_endPos vectorDiff _position) > 0) then {
+    _surfaceNormal = _surfaceNormal vectorMultiply -1;
+};
+
+private _v1 = vectorNormalized (_surfaceNormal vectorMultiply -1);
+// on walls (>20º from horizontal) point vup upward, on floors along the bullet direction
+private _ref = [_endPos vectorDiff _position, [0, 0, 1]] select (abs (_v1 # 2) < 0.94);
+private _side = _v1 vectorCrossProduct _ref;
+// bullet travelling straight into the floor, any reference will do
+if (vectorMagnitude _side < 0.01) then {
+    _side = _v1 vectorCrossProduct [0, 1, 0];
+};
+_side = vectorNormalized _side;
+private _up = _side vectorCrossProduct _v1;
+// rotate vup around the surface normal for some variation
+private _angle = random 45;
+_up = (_up vectorMultiply cos _angle) vectorAdd (_side vectorMultiply sin _angle);
+
+private _args = [
+    _intersectPos vectorAdd (_surfaceNormal vectorMultiply 0.03),
+    _v1,
+    _up,
+    floor random count GVAR(textures)
+];
+// HitPart only fires on the shooter's machine, share the splatter so everyone sees it
+if (GVAR(SHARE)) then {
+    [QGVAR(createSplatter), _args] call CBA_fnc_globalEvent;
+} else {
+    _args call FUNC(createSplatter);
+};

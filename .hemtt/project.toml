@@ -1,0 +1,8 @@
+name = "SwiftSFX"
+author = "Head"
+prefix = "swift"
+mainprefix = "x"
+
+[version]
+path = "addons/main/script_mod.hpp"
+git_hash = 0

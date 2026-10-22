@@ -20,20 +20,12 @@ class CfgMods {
         dir = "";
         hideName = 0;
         hidePicture = 0;
-        logo = "logo_tmf_small_ca.paa";
-        logoOver = "logo_tmf_small_glow_ca.paa";
-        logoSmall = "logo_tmf_small_ca.paa";
+        logo = "x\swift\addons\main\logo_tmf_ca.paa";
+        logoOver = "x\swift\addons\main\logo_tmf_ca.paa";
+        logoSmall = "x\swift\addons\main\logo_tmf_ca.paa";
         name = "SwiftSFX";
         overview = "SwiftSFX";
         picture = "x\swift\addons\main\logo_tmf_ca.paa";
         tooltip = "SwiftSFX";
-    };
-};
-class CfgFactionClasses
-{
-    class NO_CATEGORY;
-    class TEAMWORK: NO_CATEGORY
-    {
-        displayName = "TMF";
     };
 };
