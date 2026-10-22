@@ -1,6 +1,6 @@
 #include "script_component.hpp"
 
-class cfgPatches
+class CfgPatches
 {
     class ADDON
     {
@@ -19,7 +19,7 @@ class Extended_PreInit_EventHandlers {
         init = QUOTE(call COMPILE_FILE(XEH_preInit));
     };
 };
-class Extended_Killed_Eventhandlers
+class Extended_Killed_EventHandlers
 {
     class CAManBase
     {

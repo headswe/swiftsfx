@@ -18,6 +18,15 @@ jobs:
       - uses: arma-actions/hemtt@v1
         name: Setup HEMTT
 
+      - name: Check tag matches mod version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          version="$(hemtt value project.version)"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match version $version in addons/main/script_mod.hpp"
+            exit 1
+          fi
+
       - name: Check
         run: hemtt check
 
